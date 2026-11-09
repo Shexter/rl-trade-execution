@@ -4,7 +4,8 @@ Price: arithmetic random walk with permanent impact
     S[t+1] = S[t] + sigma * z[t] - gamma * n[t]
 Each sale of n shares fills at S[t] - eta * n (temporary impact).
 Cost = implementation shortfall = total_shares * S0 - cash received.
-Reward per step = -(shortfall incurred that step), so episode return = -shortfall.
+Reward per step is mark-to-market: n * (fill - S[t]) + shares_held_after * (S[t+1] - S[t]).
+It telescopes, so episode return = -shortfall exactly, but each step only carries one step of price noise.
 """
 import numpy as np
 
@@ -40,9 +41,9 @@ class ExecutionEnv:
         fill = self.price - self.eta * n
         self.cash += n * fill
         self.shares_left -= n
-        reward = -n * (self.s0 - fill)
         self.prev_price = self.price
         self.price += self.sigma * self.rng.standard_normal() - self.gamma * n
+        reward = n * (fill - self.prev_price) + self.shares_left * (self.price - self.prev_price)
         self.t += 1
         return self.state(), reward, self.steps_left == 0
 

@@ -41,3 +41,13 @@ def test_almgren_chriss_front_loads_and_tends_to_twap():
     env.reset(0)
     assert almgren_chriss(1e-6)(env) > twap(env)
     assert np.isclose(almgren_chriss(0.0)(env), twap(env))
+
+
+def test_rewards_sum_to_minus_shortfall():
+    env = ExecutionEnv()
+    env.reset(7)
+    total, done = 0.0, False
+    while not done:
+        _, r, done = env.step(0.3 * env.shares_left)
+        total += r
+    assert np.isclose(total, -env.shortfall())

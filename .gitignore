@@ -4,3 +4,4 @@ mlruns/
 mlartifacts/
 .venv/
 *.pt
+mlflow.db
