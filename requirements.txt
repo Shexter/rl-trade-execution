@@ -3,5 +3,5 @@ numpy
 pandas
 seaborn
 mlflow
-streamlit
 pytest
+tabulate
